@@ -7,14 +7,15 @@ import (
 )
 
 const (
-	maxPickCount = 5
+	maxPickCount  = 5
+	redisPoolSize = 32
 )
 
 var (
 	redisPool *pool.Pool
 )
 
-func pickARedis() *redis.Client {
+func dialRedis() *redis.Client {
 	var redisClient *redis.Client
 	var err error = nil
 	tryCount := 0
@@ -27,4 +28,11 @@ func pickARedis() *redis.Client {
 		}
 	}
 	return redisClient
+}
+
+func init() {
+	redisPool, err = pool.NewPool("tcp", "localhost:6378", redisPoolSize)
+	if err != nil {
+		panic(err)
+	}
 }
