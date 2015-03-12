@@ -1,9 +1,16 @@
 package main
 
 import (
-	"logx"
+	"fmt"
+	"store"
 )
 
 func main() {
-	logx.Info("ss")
+	rs := &store.RedisSet{}
+	test(rs)
+}
+
+func test(s store.SetStringStorer) {
+	s.Add("s", "a")
+	fmt.Println(s.Size("s"))
 }
