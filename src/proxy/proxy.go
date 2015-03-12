@@ -1,25 +1,51 @@
 package proxy
 
 import (
-	"logx"
-	"net/http"
-	"net/url"
+	"http"
 )
 
-func TestGet(proxyAddress, testSite string, validFunc func(http.Response) bool) bool {
-	proxyUrl, err := url.Parse("http://" + proxyAddress)
-	if err != nil {
-		logx.Info(proxy.Address, "not valid with error")
-		logx.Error(err)
-		return false
+const (
+	GetTestSite  = "http://www.baidu.com"
+	PostTestSite = "http://www.baidu.com"
+)
+
+var (
+	OriginPool       *SetPool
+	StablePool       *HashArrayStore
+	HeighPerformPool *SetPool
+	Set              *SetStore
+	Hash             *HashArrayStore
+)
+
+func RefreshOriginPool() {
+
+}
+
+func RefreshStablePool() {
+	allProxies := OriginPool.All()
+	for proxy := range allProxies {
 	}
+}
 
-	client := &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
-	resp, err := client.Get(testSite)
+func RefreshHeightPerfromPool() {
 
-	if err != nil || resp.StatusCode != 200 {
-		return false
-	}
+}
 
-	return validFunc(resp)
+func Rand() {
+
+}
+
+func Feedback(proxyString string, time int) {
+
+}
+
+func validGet(reps http.Response) bool {
+}
+
+func validPost(reps http.Response) bool {
+}
+
+func init() {
+	OriginPool = &SetPool{PoolKey: ORIGIN_POOL_KEY, *Set}
+	OriginPool = &SetPool{PoolKey: ORIGIN_POOL_KEY, *Set}
 }
