@@ -38,7 +38,7 @@ func (redisSet *RedisSet) All(key string) []string {
 	return strs
 }
 
-func (redisSet *RedisSet) IsIn(key string) bool {
+func (redisSet *RedisSet) IsIn(key string, value string) bool {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -46,7 +46,7 @@ func (redisSet *RedisSet) IsIn(key string) bool {
 	}
 	defer client.Close()
 
-	in, err := client.Cmd("SISMEMBER", key).Bool()
+	in, err := client.Cmd("SISMEMBER", key, value).Bool()
 	if err != nil {
 		logx.Warn(err)
 		return false

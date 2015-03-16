@@ -1,16 +1,16 @@
 package store
 
 type SetStringStorer interface {
-	All(string) []string
-	IsIn(string) bool
-	Add(string, string) error
-	Size(string) int
+	All(key string) []string
+	IsIn(key, value string) bool
+	Add(key, value string) error
+	Size(key string) int
 }
 
 type HashArrayStorer interface {
-	Get(string, string) []int
-	Set(string, string, []int) error
-	IsKey(string, string) bool
-	Keys(string) []string
-	Size(string) int
+	Get(key, field string) []int
+	Set(key, field string, data []int) error
+	IsKey(key, field string) bool
+	Keys(key string) []string
+	Size(key string) int
 }
