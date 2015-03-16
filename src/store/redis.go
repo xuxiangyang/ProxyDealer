@@ -1,6 +1,7 @@
 package store
 
 import (
+	"encoding/json"
 	"github.com/fzzy/radix/extra/pool"
 	"logx"
 )
@@ -18,7 +19,7 @@ var (
 type RedisSet struct {
 }
 
-type RedisHash struct {
+type RedisHashArray struct {
 }
 
 func (redisSet *RedisSet) All(key string) []string {
@@ -53,15 +54,16 @@ func (redisSet *RedisSet) IsIn(key string) bool {
 	return in
 }
 
-func (redisSet *RedisSet) Add(key, member string) {
+func (redisSet *RedisSet) Add(key, member string) error {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
-		return
+		return err
 	}
 	defer client.Close()
 
 	client.Cmd("SADD", key, member)
+	return nil
 }
 
 func (redisSet *RedisSet) Size(key string) int {
@@ -73,6 +75,95 @@ func (redisSet *RedisSet) Size(key string) int {
 	defer client.Close()
 
 	count, err := client.Cmd("SCARD", key).Int()
+	if err != nil {
+		logx.Warn(err)
+		return 0
+	}
+	return count
+}
+
+func (redisHashArray *RedisHashArray) Get(key, feild string) []int {
+	client, err := redisPool.Get()
+	if err != nil {
+		logx.Warn(err)
+		return []int{}
+	}
+	defer client.Close()
+
+	serializedArray, err := client.Cmd("HGET", key, feild).Bytes()
+	if err != nil {
+		logx.Warn(err)
+		return []int{}
+	}
+
+	var result []int
+	err = json.Unmarshal(serializedArray, &result)
+	if err != nil {
+		logx.Warn(err)
+		return []int{}
+	}
+	return result
+}
+
+func (redisHashArray *RedisHashArray) Set(key, field string, data []int) error {
+	serializedArray, err := json.Marshal(data)
+	if err != nil {
+		logx.Warn(err)
+		return err
+	}
+
+	client, err := redisPool.Get()
+	if err != nil {
+		logx.Warn(err)
+		return err
+	}
+	defer client.Close()
+
+	client.Cmd("HSET", key, field, string(serializedArray))
+	return nil
+}
+
+func (redisHashArray *RedisHashArray) IsKey(key, field string) bool {
+	client, err := redisPool.Get()
+	if err != nil {
+		logx.Warn(err)
+		return false
+	}
+	defer client.Close()
+
+	exist, err := client.Cmd("HEXISTS", key, field).Bool()
+	if err != nil {
+		logx.Warn(err)
+		return false
+	}
+	return exist
+}
+
+func (redisHashArray *RedisHashArray) Keys(key string) []string {
+	client, err := redisPool.Get()
+	if err != nil {
+		logx.Warn(err)
+		return []string{}
+	}
+	defer client.Close()
+
+	fields, err := client.Cmd("HKEYS", key).List()
+	if err != nil {
+		logx.Warn(err)
+		return []string{}
+	}
+	return fields
+}
+
+func (redisHashArray *RedisHashArray) Size(key string) int {
+	client, err := redisPool.Get()
+	if err != nil {
+		logx.Warn(err)
+		return 0
+	}
+	defer client.Close()
+
+	count, err := client.Cmd("HLEN", key).Int()
 	if err != nil {
 		logx.Warn(err)
 		return 0
