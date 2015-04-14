@@ -22,7 +22,7 @@ type RedisSet struct {
 type RedisHashArray struct {
 }
 
-func (redisSet *RedisSet) All(key string) []string {
+func (redisSet RedisSet) All(key string) []string {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -38,7 +38,7 @@ func (redisSet *RedisSet) All(key string) []string {
 	return strs
 }
 
-func (redisSet *RedisSet) IsIn(key string, value string) bool {
+func (redisSet RedisSet) IsIn(key string, value string) bool {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -54,7 +54,7 @@ func (redisSet *RedisSet) IsIn(key string, value string) bool {
 	return in
 }
 
-func (redisSet *RedisSet) Add(key, member string) error {
+func (redisSet RedisSet) Add(key, member string) error {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -66,7 +66,7 @@ func (redisSet *RedisSet) Add(key, member string) error {
 	return nil
 }
 
-func (redisSet *RedisSet) Size(key string) int {
+func (redisSet RedisSet) Size(key string) int {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -82,7 +82,7 @@ func (redisSet *RedisSet) Size(key string) int {
 	return count
 }
 
-func (redisHashArray *RedisHashArray) Get(key, feild string) []int {
+func (redisHashArray RedisHashArray) Get(key, feild string) []int {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -105,7 +105,7 @@ func (redisHashArray *RedisHashArray) Get(key, feild string) []int {
 	return result
 }
 
-func (redisHashArray *RedisHashArray) Set(key, field string, data []int) error {
+func (redisHashArray RedisHashArray) Set(key, field string, data []int) error {
 	serializedArray, err := json.Marshal(data)
 	if err != nil {
 		logx.Warn(err)
@@ -123,7 +123,7 @@ func (redisHashArray *RedisHashArray) Set(key, field string, data []int) error {
 	return nil
 }
 
-func (redisHashArray *RedisHashArray) IsKey(key, field string) bool {
+func (redisHashArray RedisHashArray) IsKey(key, field string) bool {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -139,7 +139,7 @@ func (redisHashArray *RedisHashArray) IsKey(key, field string) bool {
 	return exist
 }
 
-func (redisHashArray *RedisHashArray) Keys(key string) []string {
+func (redisHashArray RedisHashArray) Keys(key string) []string {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
@@ -155,7 +155,7 @@ func (redisHashArray *RedisHashArray) Keys(key string) []string {
 	return fields
 }
 
-func (redisHashArray *RedisHashArray) Size(key string) int {
+func (redisHashArray RedisHashArray) Size(key string) int {
 	client, err := redisPool.Get()
 	if err != nil {
 		logx.Warn(err)
