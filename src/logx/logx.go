@@ -1,7 +1,9 @@
 package logx
 
 import (
+	"fmt"
 	"log"
+	"os"
 )
 
 const LogLevel = 0 // current Log Level
@@ -17,28 +19,29 @@ var (
 	green  = string([]byte{27, 91, 57, 50, 109})
 	yellow = string([]byte{27, 91, 57, 51, 109})
 	reset  = string([]byte{27, 91, 48, 109})
+	std    = log.New(os.Stderr, "", log.LstdFlags)
 )
 
 func Info(message interface{}) {
 	if LogLevel > InfoLevel {
 		return
 	}
-	log.SetFlags(log.LstdFlags)
-	log.Println(green, "[INFO]", reset, message)
+	std.SetFlags(log.LstdFlags)
+	std.Println(green, "[INFO]", reset, message)
 }
 
 func Warn(message interface{}) {
 	if LogLevel > WarningLevel {
 		return
 	}
-	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
-	log.Println(yellow, "[WARN]", reset, message)
+	std.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	std.Output(3, fmt.Sprintln(yellow, "[WARN]", reset, message))
 }
 
 func Error(message interface{}) {
 	if LogLevel > ErrorLevel {
 		return
 	}
-	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
-	log.Println(red, "[ERROR]", reset, message)
+	std.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	std.Output(3, fmt.Sprintln(red, "[ERROR]", reset, message))
 }
