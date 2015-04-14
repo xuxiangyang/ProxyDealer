@@ -14,14 +14,20 @@ const (
 	TestUrl = `http://211.155.88.207:9191/`
 )
 
+type TestResult struct {
+	Proxy *url.URL
+	Time  int
+	Ok    bool
+}
+
 type responseJson struct {
 	Success bool `json:success`
 }
 
-func Test(proxy *url.URL) (time int, ok bool) {
+func Test(proxy *url.URL) *TestResult {
 	getTime, getOk := testGet(proxy)
 	postTime, postOk := testPost(proxy)
-	return max(getTime, postTime), getOk && postOk
+	return &TestResult{Proxy: proxy, Time: max(getTime, postTime), Ok: getOk && postOk}
 }
 
 func testGet(proxy *url.URL) (time int, ok bool) {
@@ -43,19 +49,20 @@ func respValidFunc(resp *http.Response) bool {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		logx.Warn(resp.StatusCode)
 		return false
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logx.Error(err)
+		logx.Warn(err)
 		return false
 	}
 
 	var rj responseJson
 	err = json.Unmarshal(body, &rj)
 	if err != nil {
-		logx.Error(err)
+		logx.Warn(err)
 		return false
 	}
 	return rj.Success
@@ -71,12 +78,11 @@ func max(a, b int) int {
 
 func proxyedResponseTest(proxy *url.URL, fetchFunc func(*http.Client) (*http.Response, error), validFunc func(*http.Response) bool) (int, bool) {
 	client := &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxy)}}
-
 	startTime := time.Now()
 	resp, err := fetchFunc(client)
 	endTime := time.Now()
 	if err != nil || !validFunc(resp) {
-		logx.Error(err)
+		logx.Warn(err)
 		return -1, false
 	}
 	return int(endTime.Sub(startTime).Seconds()), true
