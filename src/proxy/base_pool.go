@@ -16,11 +16,11 @@ type BasePool struct {
 	PingerCount       int
 }
 
-func InitBasePool() BasePool {
-	return BasePool{PingBufferSize: 1024, ProcessBufferSize: 1024, PingerCount: 2048}
+func InitBasePool() *BasePool {
+	return &BasePool{PingBufferSize: 1024, ProcessBufferSize: 1024, PingerCount: 2048}
 }
 
-func (pool BasePool) Ping(in <-chan *url.URL, out chan<- *connect.TestResult) {
+func (pool *BasePool) Ping(in <-chan *url.URL, out chan<- *connect.TestResult) {
 	defer close(out)
 
 	concurrenceSignal := make(chan bool, pool.PingerCount)
