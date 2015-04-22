@@ -4,6 +4,7 @@ import (
 	"connect"
 	"net/url"
 	"store"
+	"utils"
 )
 
 const (
@@ -35,10 +36,6 @@ func (pool *Pool) ExtractTestUrl(out chan<- *url.URL) {
 
 func (pool *Pool) Process(in <-chan *connect.TestResult) {
 	for result := range in {
-		if result.Ok {
-			stablePool.Add(result.Proxy.Host, result.Time)
-		} else {
-			stablePool.Add(result.Proxy.Host, TIME_OUT+1)
-		}
+		stablePool.Add(result.Proxy.Host, utils.EscapeToTime(result.Ok, result.Time))
 	}
 }
