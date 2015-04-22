@@ -5,6 +5,8 @@ type SetStringStorer interface {
 	IsIn(key, value string) bool
 	Add(key, value string) error
 	Size(key string) int
+	Rand(key string) (bool, string)
+	Remove(key, value string)
 }
 
 type HashArrayStorer interface {

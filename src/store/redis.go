@@ -82,6 +82,26 @@ func (redisSet RedisSet) Size(key string) int {
 	return count
 }
 
+func (redisSet RedisSet) Rand(key string) (ok bool, proxy string) {
+	client, err := redisPool.Get()
+	if err != nil {
+		logx.Warn(err)
+		return false, ""
+	}
+	defer client.Close()
+	return true, client.Cmd("SRANDMEMBER", key).String()
+}
+
+func (redisSet RedisSet) Remove(key, value string) {
+	client, err := redisPool.Get()
+	if err != nil {
+		logx.Warn(err)
+	}
+	defer client.Close()
+
+	client.Cmd("SREM", key, value)
+}
+
 func (redisHashArray RedisHashArray) Get(key, feild string) []int {
 	client, err := redisPool.Get()
 	if err != nil {
