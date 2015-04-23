@@ -29,7 +29,9 @@ func InitStablePool() *StablePool {
 func (pool *StablePool) Add(proxy string, time int) {
 	times := pool.Storage.Get(STABLE_POOL_KEY, proxy)
 	times = append([]int{time}, times...)
-	times = times[:MAX_TIME_RECORDS_LENGTH]
+	if len(times) > MAX_TIME_RECORDS_LENGTH {
+		times = times[:MAX_TIME_RECORDS_LENGTH]
+	}
 	pool.Storage.Set(STABLE_POOL_KEY, proxy, times)
 }
 
