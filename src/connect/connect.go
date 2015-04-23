@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	TestUrl = `http://211.155.88.207:9191/`
+	TestUrl  = `http://211.155.88.207:9191/`
+	TIME_OUT = 30
 )
 
 type TestResult struct {
@@ -77,7 +78,7 @@ func max(a, b int) int {
 }
 
 func proxyedResponseTest(proxy *url.URL, fetchFunc func(*http.Client) (*http.Response, error), validFunc func(*http.Response) bool) (int, bool) {
-	client := &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxy)}}
+	client := &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxy)}, Timeout: TIME_OUT * time.Second}
 	startTime := time.Now()
 	resp, err := fetchFunc(client)
 	endTime := time.Now()
