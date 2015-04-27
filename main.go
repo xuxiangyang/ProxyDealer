@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"proxy"
 )
 
 func main() {
-	pool := proxy.InitPool()
-	proxy.Refresh(pool, pool.PingBufferSize, pool.ProcessBufferSize)
+	ok, host := proxy.Rand()
+	fmt.Println(ok)
+	fmt.Println(host)
 }

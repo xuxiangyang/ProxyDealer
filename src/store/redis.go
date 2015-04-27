@@ -3,6 +3,7 @@ package store
 import (
 	"encoding/json"
 	"github.com/fzzy/radix/extra/pool"
+	"github.com/fzzy/radix/redis"
 	"logx"
 )
 
@@ -89,7 +90,13 @@ func (redisSet RedisSet) Rand(key string) (ok bool, proxy string) {
 		return false, ""
 	}
 	defer client.Close()
-	return true, client.Cmd("SRANDMEMBER", key).String()
+
+	reply := client.Cmd("SRANDMEMBER", key)
+	if reply.Type == redis.NilReply {
+		return false, ""
+	} else {
+		return true, reply.String()
+	}
 }
 
 func (redisSet RedisSet) Remove(key, value string) {

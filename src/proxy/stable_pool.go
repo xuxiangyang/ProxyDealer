@@ -64,6 +64,8 @@ func (pool *StablePool) Process(in <-chan *connect.TestResult) {
 
 		if pool.IsEfficient(result.Proxy.Host) {
 			efficientPool.Add(result.Proxy.Host)
+		} else {
+			efficientPool.Remove(result.Proxy.Host)
 		}
 	}
 }
